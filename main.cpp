@@ -10,17 +10,21 @@
 #include <QApplication>
 #include <string>
 #include <QtWidgets>
-#include <iostream>
+
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    QString name = "this shit empty";
+    QString name;
     TcpClient client;
 
-    if(argc >= 2){
+    if(argc > 1){
         name = argv[1];
         client.setNickName(name);
+    }else{
+        name = "this shit empty";
+        client.setNickName(name);
+
     }
     if (argc >= 4){
         client.firstConnect(argv[2], atoi(argv[3]));

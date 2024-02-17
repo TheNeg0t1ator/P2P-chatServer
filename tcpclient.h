@@ -45,7 +45,6 @@ private:
     QString nickname;
     QString port;
     QString ip;
-
 };
 
 #endif // TCPCLIENT_H
