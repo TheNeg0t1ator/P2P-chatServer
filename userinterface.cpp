@@ -77,6 +77,25 @@ Userinterface::Userinterface(TcpClient * client) : Client(client) {
                          Client->sendToAll(message);
                          inputLineEdit->clear();
                      });
+     QObject::connect(inputLineEdit, &QLineEdit::returnPressed, [this, inputLineEdit, debugTextEdit]()
+                     {
+                         QString message = inputLineEdit->text();
+                         if (message.isEmpty())
+                         {
+                             // Show message box with error
+                             QMessageBox::warning(&window, "Error", "Message cannot be empty!");
+                             return;
+                         }
+
+                         //intercept for json
+                         message = createJSON(Client->getNickName(), Client->getIP(), Client->getPort(), message );
+                         receivedTextEdit->appendPlainText(JSONtoMessage(message));
+                         qDebug() << "Message sent: " << message;
+                         debugTextEdit->appendPlainText("Message sent: " + message);
+
+                         Client->sendToAll(message);
+                         inputLineEdit->clear();
+                     });
 
     // Show window
     window.show();
