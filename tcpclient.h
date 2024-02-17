@@ -43,6 +43,8 @@ private:
     Userinterface userInterface;
 
     QString nickname;
+    QString port;
+    QString ip;
 };
 
 #endif // TCPCLIENT_H

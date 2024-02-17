@@ -5,7 +5,9 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QString>
+
 QString createJSON(QString id, QString ip, quint16 port, QString message) {
+
     QDateTime date = QDateTime::currentDateTime();
     QJsonObject jsonObj;
     jsonObj["id"] = id;

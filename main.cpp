@@ -11,6 +11,7 @@
 #include <string>
 #include <QtWidgets>
 
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
@@ -23,6 +24,7 @@ int main(int argc, char *argv[])
     }else{
         name = "this shit empty";
         client.setNickName(name);
+
     }
     if (argc >= 4){
         client.firstConnect(argv[2], atoi(argv[3]));

@@ -59,7 +59,6 @@ Userinterface::Userinterface(TcpClient * client) : Client(client) {
                      });
 
 
-
     auto messageProcessingFunc = [this, debugTextEdit, receivedTextEdit, inputLineEdit]
     {
         QString message = inputLineEdit->text();
@@ -82,7 +81,6 @@ Userinterface::Userinterface(TcpClient * client) : Client(client) {
 
     QObject::connect(sendButton, &QPushButton::clicked, messageProcessingFunc);
     QObject::connect(inputLineEdit, &QLineEdit::returnPressed, messageProcessingFunc);
-
     // Show window
     window.show();
 
