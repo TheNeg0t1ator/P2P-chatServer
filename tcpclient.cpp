@@ -15,10 +15,9 @@
 
 /*
  * constructor of the TcpClient class
- * 1. initializes the Nickname string with the nickname that was provided,
- *    as well as the QObject and the userInterfase
+ * 1. Initializes the Nickname string with the nickname that was provided
  *
- * 2. Creates a new Tcpserver class for... well the tcpserver functions of the p2p chat
+ * 2. Creates a new Tcpserver instance for... well the tcpserver functions of the p2p chat
  *
  * 3. Connects and listens
  *
@@ -33,17 +32,17 @@ TcpClient::TcpClient(QObject *parent, QString NickName)
 }
 
 /*
- * 1. Receive to the connection from the QTcpServer and store it in a QTcpSocket object
+ * 1. Receive a new connection from the QTcpServer and store it in a QTcpSocket object
  *
  * 2. Receive the list of peers in string format
  *
  * 3. Send the list of peers the the new connection
  *
- * 4. If there is new data available from the new socket, the readFromAll slot will be said to handle it
+ * 4. If there is new data available from the new socket, the readFromAll slot will handle it
  *
  * 5. Add the new socket to the m_sockets list
  *
- * 6. Send a newConnection signal with the socket as the parameter4
+ * 6. Send a newConnection signal with the socket as the parameter
  *    this can be received in other parts of the program
  */
 void TcpClient::handleNewConnection()
@@ -60,7 +59,6 @@ void TcpClient::handleNewConnection()
 /*
  * Iterate through all the sockets and send the "message" to all
  * the other pc's (connections)
- *
 */
 void TcpClient::sendToAll(QString message)
 {
@@ -73,7 +71,7 @@ void TcpClient::sendToAll(QString message)
 /*
  * 1. Go through the entire list of sockets and check if there are newly received messages
  *
- * 2. Retrieve the message and send (emit) the message under the name: newMessageReceived
+ * 2. Retrieve the message and emit the newMessageReceived signal.
 */
 void TcpClient::readFromAll()
 {
@@ -92,11 +90,11 @@ void TcpClient::firstConnect(std::string firstIp, int firstPort)
     /*
      * 1. Get me a damn socket! Grrrr
      *
-     * 2. Connect to the "host" with the information that was provided as arguments to the main
+     * 2. Connect to the "host" with the information that was provided as arguments to main
      *
      * 3. Write a "Hello there!" message to that connection
      *
-     * 4. Wait for that message to be written (1sec) and wait for the message to be send (1sec)
+     * 4. Wait for that message to be written (1 sec) and wait for the message to be send (1 sec)
      *
     */
     QTcpSocket *firstSocket = new QTcpSocket(this);
@@ -119,6 +117,8 @@ void TcpClient::firstConnect(std::string firstIp, int firstPort)
         emit newConnection(firstSocket);
         qDebug() << "Connected to: " << firstIp.c_str() << ":" << firstSocket;
 
+        // Receive the message from the host, this should be the list of the other ip's and ports
+
 
         std::string recv;
         recv = firstSocket->readAll();
@@ -126,15 +126,26 @@ void TcpClient::firstConnect(std::string firstIp, int firstPort)
         // Parse the received buffer filled with new IP and Ports.
         std::istringstream ss(recv);
         std::string token, newIP, newPort;
-        getline(ss, token); // discard first line
+        // discard first line
+        getline(ss, token);
 
+        // And for each line in the string, do the following...
         while (getline(ss, token))
         {
+            // Create a temp string and a stringstream token to keep track of the current character in the string
             std::string temp;
             std::stringstream tokenStream(token);
+            // extract both the IP address and the port
             getline(tokenStream, newIP, ':');
             getline(tokenStream, newPort);
 
+            /*
+             * 1. Create a new socket
+             *
+             * 2. send message
+             *
+             * 3. Wait for the message to be written and send
+            */
             QTcpSocket *socket = new QTcpSocket(this);
 
             socket->connectToHost(newIP.c_str(), atoi(newPort.c_str()));
@@ -142,8 +153,15 @@ void TcpClient::firstConnect(std::string firstIp, int firstPort)
             socket->waitForBytesWritten(1000);
             socket->waitForReadyRead(1000);
 
+            // Wait for a message from that socket aka. the "Hello there"
             temp = socket->readAll();
-            // Are we connected?
+            /*
+             * 1. Are we connected? If so then...
+             *
+             * 2. Connect to the readyRead signal from the Tcpclient, slot readFromAll
+             *
+             * 3. Append the socket to the socketlist and send the socket to the newConnection signal
+            */
             if (socket->state() == QAbstractSocket::ConnectedState)
             {
                 std::cout << "Connected to " << newIP << ":" << newPort << " successfully!" << std::endl;
@@ -151,9 +169,10 @@ void TcpClient::firstConnect(std::string firstIp, int firstPort)
                 m_sockets.append(socket);
                 emit newConnection(socket);
             }
+            // Otherwise a error will be printed
             else
             {
-                std::cout << "Failed to connect to " << newIP << ":" << newPort << "." << std::endl;
+                qWarning() << "Failed to connect to " << newIP << ":" << newPort << ".";
             }
         }
     }
@@ -168,8 +187,8 @@ void TcpClient::firstConnect(std::string firstIp, int firstPort)
  *
  * 2. Go through the list of sockets and check if they are connected
  *
- * 3. If they are then convert the IP address to a string format and add the port info to it
- *    do this for every connection and add them together as a complete string
+ * 3. If they are then convert the IP address to a string format and add the port information to that string.
+ *    Do this for every connection and add them together as a complete string
  *
  * 4. Place this string in the "temp" string and return that string
  *
