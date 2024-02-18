@@ -24,6 +24,11 @@ QString JSONtoMessage(QString Json){
 
     JsonParser Parser(Json);
     QString output;
+
+    if(Parser.getId().isEmpty() || Parser.getTimestamp().isEmpty() || Parser.getMessage().isEmpty()){
+        return "";
+    }
+
     output = Parser.getId() +" "+ Parser.getTimestamp() +"\n"+ Parser.getMessage();
     return output;
 }
