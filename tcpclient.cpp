@@ -107,32 +107,32 @@ void TcpClient::firstConnect(std::string firstIp, int firstPort)
     // if the connection is successfull then...
     if (firstSocket->waitForConnected())
     {
-        /* 1. Connect to readyRead signal of the firstSocket object, slot readFromAll
+        /* 1. Connect to readyRead "signal" of the firstSocket object, slot readFromAll
          *
-         * 2. Add the host socket and emit the signal that there is a new socket with the socket
-         *    itself as the parameter
+         * 2. Add the host socket to the list and emit the newConnection signal
+         *    with the socket as the parameter to notify other parts of the program about the new connection.
         */
         connect(firstSocket, SIGNAL(readyRead()), this, SLOT(readFromAll()));
         m_sockets.append(firstSocket);
         emit newConnection(firstSocket);
         qDebug() << "Connected to: " << firstIp.c_str() << ":" << firstSocket;
 
-        // Receive the message from the host, this should be the list of the other ip's and ports
+        // Receive the message from the host, this should contain other IP addresses and ports
 
 
         std::string recv;
         recv = firstSocket->readAll();
 
-        // Parse the received buffer filled with new IP and Ports.
+        // Parse the received buffer to extract new IP addresses and ports
         std::istringstream ss(recv);
         std::string token, newIP, newPort;
         // discard first line
         getline(ss, token);
 
-        // And for each line in the string, do the following...
+        // And for each other line in the string, do the following...
         while (getline(ss, token))
         {
-            // Create a temp string and a stringstream token to keep track of the current character in the string
+            // Create a "temp" string and a stringstream token to keep track of the current character in the string
             std::string temp;
             std::stringstream tokenStream(token);
             // extract both the IP address and the port
@@ -153,14 +153,14 @@ void TcpClient::firstConnect(std::string firstIp, int firstPort)
             socket->waitForBytesWritten(1000);
             socket->waitForReadyRead(1000);
 
-            // Wait for a message from that socket aka. the "Hello there"
+            // Wait for a message from that socket
             temp = socket->readAll();
             /*
              * 1. Are we connected? If so then...
              *
              * 2. Connect to the readyRead signal from the Tcpclient, slot readFromAll
              *
-             * 3. Append the socket to the socketlist and send the socket to the newConnection signal
+             * 3. Append the socket to the socketlist and send a readyRead signal with the socket as the parameter
             */
             if (socket->state() == QAbstractSocket::ConnectedState)
             {
@@ -169,7 +169,7 @@ void TcpClient::firstConnect(std::string firstIp, int firstPort)
                 m_sockets.append(socket);
                 emit newConnection(socket);
             }
-            // Otherwise a error will be printed
+            // Otherwise an error will be printed
             else
             {
                 qWarning() << "Failed to connect to " << newIP << ":" << newPort << ".";
