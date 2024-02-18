@@ -1,4 +1,5 @@
 #include "userinterface.h"
+#include "Json.h"
 #include "tcpclient.h"
 #include <QCoreApplication>
 #include <QObject>
@@ -8,7 +9,6 @@
 #include <QInputDialog>
 #include <QApplication>
 #include <QtWidgets>
-
 
 Userinterface::Userinterface(TcpClient * client) : Client(client) {
 
@@ -20,7 +20,7 @@ Userinterface::Userinterface(TcpClient * client) : Client(client) {
     QLabel* outputLabel = new QLabel("Enter message:");
     QLineEdit* inputLineEdit = new QLineEdit();
     QPushButton* sendButton = new QPushButton("Send");
-    QLabel* inputLabel = new QLabel("Received messages:");
+    QLabel* inputLabel = new QLabel("Chat:");
     QPlainTextEdit* receivedTextEdit = new QPlainTextEdit();
     receivedTextEdit->setReadOnly(true);
     receivedTextEdit->setMaximumBlockCount(100);
@@ -55,25 +55,34 @@ Userinterface::Userinterface(TcpClient * client) : Client(client) {
     QObject::connect(client, &TcpClient::newMessageReceived, [ receivedTextEdit](QString message)
                      {
                          qDebug() << "New message received: " << message;
-                         receivedTextEdit->appendPlainText(message);
+                         receivedTextEdit->appendPlainText(JSONtoMessage(message));
                      });
 
-    QObject::connect(sendButton, &QPushButton::clicked, [this, inputLineEdit, debugTextEdit]()
-                     {
-                         QString message = inputLineEdit->text();
-                         if (message.isEmpty())
-                         {
-                             // Show message box with error
-                             QMessageBox::warning(&window, "Error", "Message cannot be empty!");
-                             return;
-                         }
-                         qDebug() << "Message sent: " << message;
-                         debugTextEdit->appendPlainText("Message sent: " + message);
-                         Client->sendToAll(message);
-                         inputLineEdit->clear();
-                     });
 
+    auto messageProcessingFunc = [this, debugTextEdit, receivedTextEdit, inputLineEdit]
+    {
+        QString message = inputLineEdit->text();
+        if (message.isEmpty())
+        {
+            // Show message box with error
+            QMessageBox::warning(&window, "Error", "Message cannot be empty!");
+            return;
+        }
+
+        //intercept for json
+        message = createJSON(Client->getNickName(), Client->getIP(), Client->getPort(), message );
+        receivedTextEdit->appendPlainText(JSONtoMessage(message));
+        qDebug() << "Message sent: " << message;
+        debugTextEdit->appendPlainText("Message sent: " + message);
+
+        Client->sendToAll(message);
+        inputLineEdit->clear();
+    };
+
+    QObject::connect(sendButton, &QPushButton::clicked, messageProcessingFunc);
+    QObject::connect(inputLineEdit, &QLineEdit::returnPressed, messageProcessingFunc);
     // Show window
     window.show();
 
 }
+
