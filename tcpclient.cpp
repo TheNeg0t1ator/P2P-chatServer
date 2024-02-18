@@ -1,4 +1,5 @@
 #include "tcpclient.h"
+//#include "CreateJson.h"
 #include <QCoreApplication>
 #include <QObject>
 #include <QTcpSocket>
@@ -13,8 +14,8 @@
 #include <QtWidgets>
 
 
-TcpClient::TcpClient(QObject *parent)
-    : QObject(parent), userInterface(this)
+TcpClient::TcpClient(QObject *parent, QString NickName)
+    : QObject(parent), userInterface(this), nickname(NickName)
 {
     // Create the server socket and listen for connections
     server = new QTcpServer(this);
@@ -47,7 +48,7 @@ void TcpClient::readFromAll()
     {
         while (socket->bytesAvailable() > 0)
         {
-            QString message = QHostAddress(socket->peerAddress().toIPv4Address()).toString() + +": " + QString::fromUtf8(socket->readAll());
+            QString message = QString::fromUtf8(socket->readAll());
             emit newMessageReceived(message);
         }
     }

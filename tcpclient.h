@@ -17,10 +17,15 @@ class TcpClient : public QObject
     Q_OBJECT
 
 public:
-    explicit TcpClient(QObject *parent = nullptr);
+    explicit TcpClient(QObject *parent = nullptr, QString NickName = nullptr);
     ~TcpClient(){};
     std::string getPeers(void);
     void firstConnect(std::string firstIp, int firstPort);
+    QString getNickName(void)   {return nickname;};
+    QString getIP(void)         {if(!m_sockets.empty()){return m_sockets.first()->localAddress().toString();} else{return "";}};
+    quint16 getPort(void)       {return server->serverPort();};
+    void setNickName(QString NickName){nickname = NickName;};
+
 
 signals:
     void sendMessage(QString message);
@@ -36,6 +41,10 @@ private:
     QList<QTcpSocket *> m_sockets;
     QTcpServer *server;
     Userinterface userInterface;
+
+    QString nickname;
+    QString port;
+    QString ip;
 };
 
 #endif // TCPCLIENT_H
