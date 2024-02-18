@@ -5,8 +5,10 @@
 
 class JsonParser {
 public:
+    // Json Parser constructor and deconstructor
     JsonParser(const QString& jsonString);
     ~JsonParser(){};
+    // Getters for the different variables
     QString getId() const;
     QString getIp() const;
     QString getPort() const;
@@ -14,6 +16,7 @@ public:
     QString getMessage() const;
 
 private:
+    // The different variables
     QString id;
     QString ip;
     QString port;
