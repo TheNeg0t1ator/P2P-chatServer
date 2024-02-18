@@ -13,7 +13,16 @@
 #include <string>
 #include <QtWidgets>
 
-
+/*
+ * constructor of the TcpClient class
+ * 1. initializes the Nickname string with the nickname that was provided,
+ *    as well as the QObject and the userInterfase
+ *
+ * 2. Creates a new Tcpserver class for... well the tcpserver functions of the p2p chat
+ *
+ * 3. Connects and listens
+ *
+ */
 TcpClient::TcpClient(QObject *parent, QString NickName)
     : QObject(parent), userInterface(this), nickname(NickName)
 {
@@ -56,6 +65,7 @@ void TcpClient::readFromAll()
 
 void TcpClient::firstConnect(std::string firstIp, int firstPort)
 {
+
     QTcpSocket *firstSocket = new QTcpSocket(this);
     // Get me a damn socket! Grrrr
     firstSocket->connectToHost(firstIp.c_str(), firstPort);
