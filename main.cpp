@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
     }else{
         name = "this shit empty";
         client.setNickName(name);
-        qWarning() << "ERROR: Not enough arguments were given";
+        client.getUI()->QuitError("Not enough arguments");
     }
   // start the QT event loop (user input, network events, other events...)
     if (argc >= 4){

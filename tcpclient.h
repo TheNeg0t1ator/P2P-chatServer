@@ -25,7 +25,7 @@ public:
     QString getIP(void)         {if(!m_sockets.empty()){return m_sockets.first()->localAddress().toString();} else{return "";}};
     quint16 getPort(void)       {return server->serverPort();};
     void setNickName(QString NickName){nickname = NickName;};
-
+    Userinterface* getUI(void){return &userInterface;};
 
 signals:
     void sendMessage(QString message);
