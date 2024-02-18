@@ -32,6 +32,20 @@ TcpClient::TcpClient(QObject *parent, QString NickName)
     server->listen(QHostAddress::Any, 24042);
 }
 
+/*
+ * 1. Receive to the connection from the QTcpServer and store it in a QTcpSocket object
+ *
+ * 2. Receive the list of peers in string format
+ *
+ * 3. Send the list of peers the the new connection
+ *
+ * 4. If there is new data available from the new socket, the readFromAll slot will be said to handle it
+ *
+ * 5. Add the new socket to the m_sockets list
+ *
+ * 6. Send a newConnection signal with the socket as the parameter4
+ *    this can be received in other parts of the program
+ */
 void TcpClient::handleNewConnection()
 {
     QTcpSocket *socket = server->nextPendingConnection();
@@ -43,6 +57,11 @@ void TcpClient::handleNewConnection()
     emit newConnection(socket);
 }
 
+/*
+ * Iterate through all the sockets and send the "message" to all
+ * the other pc's (connections)
+ *
+*/
 void TcpClient::sendToAll(QString message)
 {
     for (QTcpSocket *socket : m_sockets)
@@ -51,6 +70,11 @@ void TcpClient::sendToAll(QString message)
     }
 }
 
+/*
+ * 1. Go through the entire list of sockets and check if there are newly received messages
+ *
+ * 2. Retrieve the message and send (emit) the message under the name: newMessageReceived
+*/
 void TcpClient::readFromAll()
 {
     for (QTcpSocket *socket : m_sockets)
