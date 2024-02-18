@@ -89,20 +89,36 @@ void TcpClient::readFromAll()
 
 void TcpClient::firstConnect(std::string firstIp, int firstPort)
 {
-
+    /*
+     * 1. Get me a damn socket! Grrrr
+     *
+     * 2. Connect to the "host" with the information that was provided as arguments to the main
+     *
+     * 3. Write a "Hello there!" message to that connection
+     *
+     * 4. Wait for that message to be written (1sec) and wait for the message to be send (1sec)
+     *
+    */
     QTcpSocket *firstSocket = new QTcpSocket(this);
-    // Get me a damn socket! Grrrr
+
     firstSocket->connectToHost(firstIp.c_str(), firstPort);
     firstSocket->write("Hello there!");
     firstSocket->waitForBytesWritten(1000);
     firstSocket->waitForReadyRead(1000);
 
+    // if the connection is successfull then...
     if (firstSocket->waitForConnected())
     {
+        /* 1. Connect to readyRead signal of the firstSocket object, slot readFromAll
+         *
+         * 2. Add the host socket and emit the signal that there is a new socket with the socket
+         *    itself as the parameter
+        */
         connect(firstSocket, SIGNAL(readyRead()), this, SLOT(readFromAll()));
         m_sockets.append(firstSocket);
         emit newConnection(firstSocket);
         qDebug() << "Connected to: " << firstIp.c_str() << ":" << firstSocket;
+
 
         std::string recv;
         recv = firstSocket->readAll();
