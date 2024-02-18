@@ -147,6 +147,17 @@ void TcpClient::firstConnect(std::string firstIp, int firstPort)
     }
 }
 
+/*
+ * 1. Initialize a new peerlist with the string "NEWCON"
+ *
+ * 2. Go through the list of sockets and check if they are connected
+ *
+ * 3. If they are then convert the IP address to a string format and add the port info to it
+ *    do this for every connection and add them together as a complete string
+ *
+ * 4. Place this string in the "temp" string and return that string
+ *
+*/
 std::string TcpClient::getPeers(void)
 {
     QString peerList = "NEWCON";
