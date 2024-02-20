@@ -15,16 +15,17 @@
 int main(int argc, char *argv[])
 {
     /*
-     * Create a QT application that will be used for all the gui elements
-     * and create an instance of the TcpClient class
+     * Create a QT application that will be used for all the gui elements,
+     * an instance of the TcpClient class
+     * and a Qstring that will contain your name in Unicode
      */
     QApplication a(argc, argv);
     QString name;
     TcpClient client;
 
    /*
-     * If 3 or more arguments (IP addresses, ports, name, etc.) are given
-     * then proceed but print a warning if there are less then 3 arguments given
+     * If more then one argument (IP addresses, ports, name, etc.) is given
+     * then proceed but print a warning if there are 1 or less arguments given
      */
     if(argc > 1){
         name = argv[1];
@@ -34,9 +35,10 @@ int main(int argc, char *argv[])
         client.setNickName(name);
         qWarning() << "ERROR: Not enough arguments were given";
     }
-  // start the QT event loop (user input, network events, other events...)
+    // If there are 4 or more arguments given then start the first connection of the pc
     if (argc >= 4){
         client.firstConnect(argv[2], atoi(argv[3]));
     }
+    // start the QT event loop (user input, network events, other events...)
     return a.exec();
 }

@@ -6,6 +6,13 @@
 #include <QJsonDocument>
 #include <QString>
 
+/*
+ * 1. Create a QdateTime object and a json object
+ *
+ * 2. The json is constructed using the given data (ip, port, id, message, ...)
+ *
+ * 3. Create a JSON string from that json object and return it
+ */
 QString createJSON(QString id, QString ip, quint16 port, QString message) {
 
     QDateTime date = QDateTime::currentDateTime();
@@ -20,6 +27,13 @@ QString createJSON(QString id, QString ip, quint16 port, QString message) {
     return jsonDoc.toJson(QJsonDocument::Compact);
 }
 
+/*
+ * 1. Create a json parser instance with the provided Json QString
+ *
+ * 2. Create a string containing the ID, Timestamp and the message parsed from the Json string
+ *
+ * 3. Return that string
+*/
 QString JSONtoMessage(QString Json){
 
     JsonParser Parser(Json);
