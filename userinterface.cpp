@@ -22,14 +22,14 @@ Userinterface::Userinterface(TcpClient * client) : Client(client) {
     QLineEdit* inputLineEdit = new QLineEdit();
     QPushButton* sendButton = new QPushButton("Send");
     QLabel* inputLabel = new QLabel("Chat:");
-    QPlainTextEdit* receivedTextEdit = new QPlainTextEdit();
-    receivedTextEdit->setReadOnly(true);
-    receivedTextEdit->setMaximumBlockCount(100);
+    QTextBrowser* receivedTextBrowser = new QTextBrowser();
+    receivedTextBrowser->setReadOnly(true);
+    receivedTextBrowser->document()->setMaximumBlockCount(100); // Set maximum block count using QTextDocument
     QLabel* debugLabel = new QLabel("Debug messages:");
     QPlainTextEdit* debugTextEdit = new QPlainTextEdit();
     debugTextEdit->setReadOnly(true);
     debugTextEdit->setMaximumHeight(110);
-    debugTextEdit->setMaximumBlockCount(100);
+    debugTextEdit->document()->setMaximumBlockCount(100); // Set maximum block count using QTextDocument
     debugTextEdit->setStyleSheet("color: red;");
 
     // Create layout
@@ -38,7 +38,7 @@ Userinterface::Userinterface(TcpClient * client) : Client(client) {
     layout->addWidget(inputLineEdit);
     layout->addWidget(sendButton);
     layout->addWidget(inputLabel);
-    layout->addWidget(receivedTextEdit);
+    layout->addWidget(receivedTextBrowser);
     layout->addWidget(debugLabel);
     layout->addWidget(debugTextEdit);
 
@@ -53,14 +53,15 @@ Userinterface::Userinterface(TcpClient * client) : Client(client) {
                          QObject::connect(socket, &QTcpSocket::readyRead, client, &TcpClient::readFromAll);
                      });
 
-    QObject::connect(client, &TcpClient::newMessageReceived, [ receivedTextEdit](QString message)
+    QObject::connect(client, &TcpClient::newMessageReceived, [receivedTextBrowser](QString message)
                      {
+
                          qDebug() << "New message received: " << message;
-                         receivedTextEdit->appendPlainText(JSONtoMessage(message));
+        receivedTextBrowser->append(JSONtoMessage(message));
                      });
 
 
-    auto messageProcessingFunc = [this, debugTextEdit, receivedTextEdit, inputLineEdit]
+    auto messageProcessingFunc = [this, debugTextEdit, receivedTextBrowser, inputLineEdit]
     {
         QString message = inputLineEdit->text();
         if (message.isEmpty())
@@ -72,7 +73,7 @@ Userinterface::Userinterface(TcpClient * client) : Client(client) {
 
         //intercept for json
         message = createJSON(Client->getNickName(), Client->getIP(), Client->getPort(), message );
-        receivedTextEdit->appendPlainText(JSONtoMessage(message));
+        receivedTextBrowser->append(JSONtoMessage(message));
         qDebug() << "Message sent: " << message;
         debugTextEdit->appendPlainText("Message sent: " + message);
 
