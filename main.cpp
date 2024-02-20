@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
     }else{
         name = "this shit empty";
         client.setNickName(name);
-        qWarning() << "ERROR: Not enough arguments were given";
+        client.getUI()->QuitError("Not enough arguments");
     }
     // If there are 4 or more arguments given then start the first connection of the pc
     if (argc >= 4){

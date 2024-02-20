@@ -1,6 +1,7 @@
 #include "userinterface.h"
 #include "Json.h"
 #include "tcpclient.h"
+#include <cstdlib>
 #include <QCoreApplication>
 #include <QObject>
 #include <QTcpSocket>
@@ -84,5 +85,20 @@ Userinterface::Userinterface(TcpClient * client) : Client(client) {
     // Show window
     window.show();
 
+
 }
 
+void Userinterface::QuitError(QString Error){
+    qWarning() << "ERROR: "<< Error;
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("Error");
+    msgBox.setText(Error);
+    msgBox.setIcon(QMessageBox::Critical);
+    QAbstractButton* pButtonExit = msgBox.addButton("Exit", QMessageBox::YesRole);
+    msgBox.exec();
+
+    if (msgBox.clickedButton()==pButtonExit) {
+        std::exit(1);
+    }
+
+}

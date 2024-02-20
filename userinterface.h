@@ -8,6 +8,8 @@ class Userinterface
 {
 public:
     Userinterface(TcpClient * client);
+    QWidget* getWindow(void){return &window;};
+    void QuitError(QString Error);
     ~Userinterface(){};
 private:
     TcpClient * Client;

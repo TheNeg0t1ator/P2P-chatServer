@@ -27,7 +27,7 @@ public:
     QString getIP(void)         {if(!m_sockets.empty()){return m_sockets.first()->localAddress().toString();} else{return "";}};
     quint16 getPort(void)       {return server->serverPort();};
     void setNickName(QString NickName){nickname = NickName;};
-
+    Userinterface* getUI(void){return &userInterface;};
 
 signals:
     // The different signal "channels" to send data and notify the right slot about certain events
