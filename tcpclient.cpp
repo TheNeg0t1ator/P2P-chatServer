@@ -28,7 +28,15 @@ TcpClient::TcpClient(QObject *parent, QString NickName)
     // Create the server socket and listen for connections
     server = new QTcpServer(this);
     connect(server, SIGNAL(newConnection()), this, SLOT(handleNewConnection()));
-    server->listen(QHostAddress::Any, 24042);
+
+    if (server->listen(QHostAddress::Any, 24042))
+    {
+        qDebug() << "Server connected and listening on port" << server->serverPort();
+    }
+    else
+    {
+        qWarning() << "Failed to connect/listen to server:" << server->errorString();
+    }
 }
 
 /*
@@ -48,12 +56,20 @@ TcpClient::TcpClient(QObject *parent, QString NickName)
 void TcpClient::handleNewConnection()
 {
     QTcpSocket *socket = server->nextPendingConnection();
-    std::string peers = getPeers();
-    socket->write(peers.c_str());
-    connect(socket, SIGNAL(readyRead()), this, SLOT(readFromAll()));
-    m_sockets.append(socket);
+    if (socket)
+    {
+        std::string peers = getPeers();
+        socket->write(peers.c_str());
+        connect(socket, SIGNAL(readyRead()), this, SLOT(readFromAll()));
+        m_sockets.append(socket);
 
-    emit newConnection(socket);
+        emit newConnection(socket);
+    }
+    else
+    {
+        qWarning() << "Failed to establish connectino with mending socket.";
+    }
+
 }
 
 /*
@@ -64,7 +80,15 @@ void TcpClient::sendToAll(QString message)
 {
     for (QTcpSocket *socket : m_sockets)
     {
-        socket->write(message.toUtf8());
+        if (socket)
+        {
+            socket->write(message.toUtf8());
+        }
+        else
+        {
+            qWarning() << "Invalid socket encountered in m_sockets list.";
+        }
+
     }
 }
 
@@ -77,11 +101,19 @@ void TcpClient::readFromAll()
 {
     for (QTcpSocket *socket : m_sockets)
     {
-        while (socket->bytesAvailable() > 0)
+        if (socket)
         {
-            QString message = QString::fromUtf8(socket->readAll());
-            emit newMessageReceived(message);
+            while (socket->bytesAvailable() > 0)
+            {
+                QString message = QString::fromUtf8(socket->readAll());
+                emit newMessageReceived(message);
+            }
         }
+        else
+        {
+            qWarning() << "Invalid socket encountered in m_sockets list.";
+        }
+
     }
 }
 
@@ -98,6 +130,7 @@ void TcpClient::firstConnect(std::string firstIp, int firstPort)
      *
     */
     QTcpSocket *firstSocket = new QTcpSocket(this);
+
 
     firstSocket->connectToHost(firstIp.c_str(), firstPort);
     firstSocket->write("Hello there!");
@@ -149,6 +182,17 @@ void TcpClient::firstConnect(std::string firstIp, int firstPort)
             QTcpSocket *socket = new QTcpSocket(this);
 
             socket->connectToHost(newIP.c_str(), atoi(newPort.c_str()));
+            /*
+            if (socket->waitForConnected())
+            {
+                // Connection successful
+                qDebug() << "Connected to host" << newIP.c_str() << ":" << newPort.c_str();
+            } else
+            {
+                // Connection failed
+                qDebug() << "Failed to connect to host" << newIP.c_str() << ":" << newPort.c_str();
+            }
+*/
             socket->write("Hello there!");
             socket->waitForBytesWritten(1000);
             socket->waitForReadyRead(1000);
@@ -180,6 +224,7 @@ void TcpClient::firstConnect(std::string firstIp, int firstPort)
     {
         qDebug() << "Failed to connect to: " << firstIp.c_str() << ":" << firstSocket;
     }
+
 }
 
 /*
