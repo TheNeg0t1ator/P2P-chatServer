@@ -15,7 +15,8 @@ The packets are sent using a JSON, something **Like this**
     "id": "Jeff Bezos",
     "ip": "127.0.0.1",
     "port": "666",
-    "message": "Hey, musk calling from mars here."   
+    "message": "Hey, musk calling from mars here.",
+    "timestamp":"30/02/2030 18:43"
 }
 ```
 
