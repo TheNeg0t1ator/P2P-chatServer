@@ -25,6 +25,12 @@ The packets are sent using a JSON, something **Like this**
 - [x] Username in arguments so that each client has unique username instead of ip being shown
 - [x] Timestamps included for message sorting
 - [x] Allow for "enter" to be used as key input
+- [ ] Setters
+- [ ] polymorphism
+- [ ] const variables and functions
+- [ ] delete
+- [ ] file io
+- [ ] lib
 
 ### Optional stuff for Kobe
 - [ ] Chat history
