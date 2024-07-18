@@ -25,4 +25,5 @@ HEADERS += \
     Json.h \
     jsonparser.h \
     tcpclient.h \
-    userinterface.h
+    userinterface.h \
+    chatlog.hpp

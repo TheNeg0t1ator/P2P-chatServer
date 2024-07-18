@@ -27,4 +27,14 @@ QString JSONtoMessage(QString Json){
     output = Parser.getId() +" "+ Parser.getTimestamp() +"\n"+ Parser.getMessage();
     return output;
 }
+
+QString JSONtoQString(QString Json){
+
+    JsonParser Parser(Json);
+    QString output;
+    output = Parser.getId() + ", " + Parser.getIp() + ", " + Parser.getPort() + ", " + Parser.getTimestamp() + ", " + Parser.getMessage();
+    return output;
+}
+
+
 #endif // JSON_H
