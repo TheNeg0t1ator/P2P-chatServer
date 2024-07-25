@@ -1,6 +1,7 @@
 #include "userinterface.h"
 #include "Json.h"
 #include "tcpclient.h"
+#include "chatlog.hpp"  // Include your fileHandler class
 #include <QCoreApplication>
 #include <QObject>
 #include <QTcpSocket>
@@ -11,6 +12,10 @@
 #include <QtWidgets>
 
 Userinterface::Userinterface(TcpClient * client) : Client(client) {
+    // Instantiate your fileHandler
+    fileHandler logHandler;
+    logHandler.init();  // Initialize log filetest
+    logHandler.setFileName("test.txt");
 
     // Create main window
     window.setWindowTitle("P2P Chat");
@@ -52,14 +57,16 @@ Userinterface::Userinterface(TcpClient * client) : Client(client) {
                          QObject::connect(socket, &QTcpSocket::readyRead, client, &TcpClient::readFromAll);
                      });
 
-    QObject::connect(client, &TcpClient::newMessageReceived, [ receivedTextEdit](QString message)
+    QObject::connect(client, &TcpClient::newMessageReceived, [this, &logHandler, receivedTextEdit](QString message)
                      {
                          qDebug() << "New message received: " << message;
                          receivedTextEdit->appendPlainText(JSONtoMessage(message));
+                         // Log the received message
+                         logHandler.appendJSON(message.toStdString().c_str());
                      });
 
 
-    auto messageProcessingFunc = [this, debugTextEdit, receivedTextEdit, inputLineEdit]
+    auto messageProcessingFunc = [this, &logHandler, debugTextEdit, receivedTextEdit, inputLineEdit]
     {
         QString message = inputLineEdit->text();
         if (message.isEmpty())
@@ -74,6 +81,22 @@ Userinterface::Userinterface(TcpClient * client) : Client(client) {
         receivedTextEdit->appendPlainText(JSONtoMessage(message));
         qDebug() << "Message sent: " << message;
         debugTextEdit->appendPlainText("Message sent: " + message);
+
+        // Store the std::string in a variable to extend its lifetime
+        std::string messageStr = message.toStdString();
+        const char * MessageToLog = messageStr.c_str();
+
+        // Log the sent message
+        //logHandler.appendJSON(MessageToLog);
+        QString AppendCSV = JSONtoQString(MessageToLog);
+
+        messageStr = AppendCSV.toStdString();
+        const char * log = messageStr.c_str();
+
+        std::cout << __func__ << " filename: " << logHandler.getFileName() << std::endl;
+        if(!logHandler.appendToFile(log)){
+            debugTextEdit->appendPlainText("Error writing to log file");
+        }
 
         Client->sendToAll(message);
         inputLineEdit->clear();
