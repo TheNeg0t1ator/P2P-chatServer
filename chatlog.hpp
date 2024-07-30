@@ -109,7 +109,7 @@ bool TxtFileHandler::appendJSON(const char* JSONmessage){
 
 class logFileHandler {
 public:
-    logFileHandler(enum FileType type) {
+    logFileHandler(enum FileType type = CSV) {
         fileType = type;
         switch (fileType) {
             case CSV:
