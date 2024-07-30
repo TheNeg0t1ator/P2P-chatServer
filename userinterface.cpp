@@ -13,9 +13,9 @@
 
 Userinterface::Userinterface(TcpClient * client) : Client(client) {
     // Instantiate your fileHandler
-    fileHandler logHandler;
-    logHandler.init();  // Initialize log filetest
-    logHandler.setFileName("test.txt");
+    fileHandler * logHandler = new fileHandler();
+    logHandler->init();  // Initialize log filetest
+    logHandler->setFileName("C:/Users/kobed/Desktop/p2p/test.txt");
 
     // Create main window
     window.setWindowTitle("P2P Chat");
@@ -57,16 +57,16 @@ Userinterface::Userinterface(TcpClient * client) : Client(client) {
                          QObject::connect(socket, &QTcpSocket::readyRead, client, &TcpClient::readFromAll);
                      });
 
-    QObject::connect(client, &TcpClient::newMessageReceived, [this, &logHandler, receivedTextEdit](QString message)
+    QObject::connect(client, &TcpClient::newMessageReceived, [this, logHandler, receivedTextEdit](QString message)
                      {
                          qDebug() << "New message received: " << message;
                          receivedTextEdit->appendPlainText(JSONtoMessage(message));
                          // Log the received message
-                         logHandler.appendJSON(message.toStdString().c_str());
+                         logHandler->appendJSON(message.toStdString().c_str());
                      });
 
 
-    auto messageProcessingFunc = [this, &logHandler, debugTextEdit, receivedTextEdit, inputLineEdit]
+    auto messageProcessingFunc = [this, logHandler, debugTextEdit, receivedTextEdit, inputLineEdit]
     {
         QString message = inputLineEdit->text();
         if (message.isEmpty())
@@ -93,8 +93,8 @@ Userinterface::Userinterface(TcpClient * client) : Client(client) {
         messageStr = AppendCSV.toStdString();
         const char * log = messageStr.c_str();
 
-        std::cout << __func__ << " filename: " << logHandler.getFileName() << std::endl;
-        if(!logHandler.appendToFile(log)){
+        std::cout << __func__ << " filename: " << logHandler->getFileName() << std::endl;
+        if(!logHandler->appendToFile(log)){
             debugTextEdit->appendPlainText("Error writing to log file");
         }
 
