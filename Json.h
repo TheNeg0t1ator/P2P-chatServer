@@ -5,6 +5,8 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QString>
+#include <iostream>
+#include <ostream>
 
 QString createJSON(QString id, QString ip, quint16 port, QString message) {
 
@@ -27,4 +29,21 @@ QString JSONtoMessage(QString Json){
     output = Parser.getId() +" "+ Parser.getTimestamp() +"\n"+ Parser.getMessage();
     return output;
 }
+
+QString JSONtoQString(QString Json){
+    std::cout << __func__  << std::endl;
+    JsonParser Parser(Json);
+    QString output;
+    output = Parser.getId() + ", " + Parser.getIp() + ", " + Parser.getPort() + ", " + Parser.getTimestamp() + ", " + Parser.getMessage();
+    return output;
+}
+
+QString JSONtoTXT(QString Json){
+    std::cout << __func__  << std::endl;
+    JsonParser Parser(Json);
+    QString output;
+    output = Parser.getId() + " " + Parser.getIp() + " " + Parser.getPort() + " " + Parser.getTimestamp() + " " + Parser.getMessage();
+    return output;
+}
+
 #endif // JSON_H
