@@ -56,6 +56,7 @@ bool fileHandler::openFile(){
 
 bool fileHandler::appendToFile(const char *text){
     if(openFile()){
+        std::cout << __func__ << ": adding to file: " << text << std::endl;
         file.seekp(0, std::ios::end);
         file << text << std::endl;  // Add a newline after the text
         closeFile();
