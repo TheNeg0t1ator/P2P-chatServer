@@ -39,26 +39,25 @@ bool fileHandler::openFile(){
     std::cout << __func__ << " filename: " << fileName << std::endl;
     if (!fileopen)
     {
-
         if(fileName != nullptr){
-
-
-
             if (fileName[0] != '\0'){
-                file.open(fileName, std::ios::in | std::ios::out);
+                file.open(fileName, std::ios::in | std::ios::out | std::ios::app);  // Open the file in append mode
+                if (!file.good()) {
+                    file.clear();  // Clear any error flags
+                    file.open(fileName, std::ios::out);  // Create the file if it doesn't exist
+                }
                 fileopen = true;
-                return true;
             }
         }
     }
-    return false;
+    return fileopen;
 }
 
 
 bool fileHandler::appendToFile(const char *text){
     if(openFile()){
         file.seekp(0, std::ios::end);
-        file << text;
+        file << text << std::endl;  // Add a newline after the text
         closeFile();
         return true;
     }
