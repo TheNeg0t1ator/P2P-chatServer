@@ -13,9 +13,9 @@
 
 Userinterface::Userinterface(TcpClient * client) : Client(client) {
     // Instantiate your fileHandler
-    fileHandler * logHandler = new fileHandler();
-    logHandler->init();  // Initialize log filetest
-    logHandler->setFileName("C:/Users/kobed/Desktop/p2p/test.txt");
+    logFileHandler * logHandler = new logFileHandler(TXT);
+    logHandler->getFileHandler()->init();  // Initialize log filetest
+    logHandler->getFileHandler()->setFileName("C:/Users/kobed/Desktop/p2p/test.txt");
 
     // Create main window
     window.setWindowTitle("P2P Chat");
@@ -93,11 +93,10 @@ Userinterface::Userinterface(TcpClient * client) : Client(client) {
         messageStr = AppendCSV.toStdString();
         const char * log = messageStr.c_str();
 
-        std::cout << __func__ << " filename: " << logHandler->getFileName() << std::endl;
-        if(!logHandler->appendToFile(log)){
+        std::cout << __func__ << " filename: " << logHandler->getFileHandler()->getFileName() << std::endl;
+        if(!logHandler->appendJSON(message.toStdString().c_str())){
             debugTextEdit->appendPlainText("Error writing to log file");
         }
-
         Client->sendToAll(message);
         inputLineEdit->clear();
     };
