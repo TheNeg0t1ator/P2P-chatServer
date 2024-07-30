@@ -32,7 +32,7 @@ public:
         bool fileGood(){return file.good();}
         void createFile(){std::cout << __func__ << " filename: " << fileName << std::endl; file.open(fileName, std::ios::out); file.close();}
         bool openFile();
-        void closeFile(){if(file.is_open()) file.close();}
+        void closeFile(){if(file.is_open()) file.close(); fileopen = false;}
 };
 
 bool fileHandler::openFile(){
