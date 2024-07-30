@@ -38,5 +38,12 @@ QString JSONtoQString(QString Json){
     return output;
 }
 
+QString JSONtoTXT(QString Json){
+    std::cout << __func__  << std::endl;
+    JsonParser Parser(Json);
+    QString output;
+    output = Parser.getId() + " " + Parser.getIp() + " " + Parser.getPort() + " " + Parser.getTimestamp() + " " + Parser.getMessage();
+    return output;
+}
 
 #endif // JSON_H

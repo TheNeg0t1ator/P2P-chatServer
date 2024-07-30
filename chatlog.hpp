@@ -2,8 +2,12 @@
 #define CHATLOG_HPP
 #include "Json.h"
 #include <fstream>
-#include <iostream>
-#include <stdio.h>
+enum FileType {
+    CSV = 1,
+    TXT = 2,
+    JSON = 3,
+    XML = 4
+};
 class fileHandler {
 public:
     fileHandler(){fileName = "Chat.log"; fileopen = false;}
@@ -32,7 +36,7 @@ public:
         bool fileGood(){return file.good();}
         void createFile(){std::cout << __func__ << " filename: " << fileName << std::endl; file.open(fileName, std::ios::out); file.close();}
         bool openFile();
-        void closeFile(){if(file.is_open()) file.close();}
+        void closeFile(){if(file.is_open()) file.close(); fileopen = false;}
 };
 
 bool fileHandler::openFile(){
@@ -56,8 +60,9 @@ bool fileHandler::openFile(){
 
 bool fileHandler::appendToFile(const char *text){
     if(openFile()){
+        std::cout << __func__ << ": adding to file: " << text << std::endl;
         file.seekp(0, std::ios::end);
-        file << text << std::endl;  // Add a newline after the text
+        file << text;
         closeFile();
         return true;
     }
@@ -73,12 +78,75 @@ public:
 };
 
 bool CsvFileHandler::appendJSON(const char* JSONmessage){
+    bool status;
     std::cout << __func__ <<"parsing JSON" << std::endl;
+
     QString AppendCSV = JSONtoQString(JSONmessage);  // Assuming JSONtoQString converts JSON to CSV string
+    
+    std::cout << __func__ <<"appending to file" << std::endl;
+    
+    status = appendToFile(AppendCSV.toStdString().c_str());
+    status = appendToFile(",\n");
+    return status;
+}
+
+class TxtFileHandler : public fileHandler {
+public:
+    TxtFileHandler() {setFileName("log.txt");}
+    virtual ~TxtFileHandler() {}  // Ensure the destructor is virtual
+    void readFromFile() override {}  // Correctly override the base class method
+    bool appendJSON(const char* JSONmessage) override;  // Correctly override the base class method
+};
+
+bool TxtFileHandler::appendJSON(const char* JSONmessage){
+    std::cout << __func__ <<"parsing JSON" << std::endl;
+    QString AppendCSV = JSONtoTXT(JSONmessage);  // Assuming JSONtoQString converts JSON to CSV string
+    AppendCSV.append("\n");
     std::cout << __func__ <<"appending to file" << std::endl;
     return appendToFile(AppendCSV.toStdString().c_str());
 }
 
 
-#endif // CHATLOG_HPP
+class logFileHandler {
+public:
+    logFileHandler(enum FileType type = CSV) {
+        fileType = type;
+        switch (fileType) {
+            case CSV:
+                file = new CsvFileHandler();
+                break;
+            case TXT:
+                 file = new TxtFileHandler();
+                 break;
+            // case JSON:
+            //     file = new JsonFileHandler();
+            //     break;
+            // case XML:
+            //     file = new XmlFileHandler();
+            //     break;
+            default:
+                file = nullptr;
+                break;
+        }
+    }
+    ~logFileHandler() {
+        delete file;
+    }
+    bool init(){
+        return file->init();
+    }
+    void setFileName(const char* name){
+        file->setFileName(name);
+    }
+    bool appendJSON(const char* JSONmessage){
+        return file->appendJSON(JSONmessage);
+    }
+    fileHandler* getFileHandler() { return file; }
+    
+private:
+    enum FileType fileType;
+    fileHandler* file;
+};
+
+#endif
 
