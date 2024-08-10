@@ -26,9 +26,9 @@ Userinterface::Userinterface(TcpClient * client) : Client(client) {
     QLineEdit* inputLineEdit = new QLineEdit();
     QPushButton* sendButton = new QPushButton("Send");
     QLabel* inputLabel = new QLabel("Chat:");
-    QPlainTextEdit* receivedTextEdit = new QPlainTextEdit();
+    QTextEdit* receivedTextEdit = new QTextEdit();
     receivedTextEdit->setReadOnly(true);
-    receivedTextEdit->setMaximumBlockCount(100);
+    receivedTextEdit->setTextInteractionFlags(Qt::TextBrowserInteraction | Qt::TextSelectableByMouse | Qt::LinksAccessibleByMouse);
     QLabel* debugLabel = new QLabel("Debug messages:");
     QPlainTextEdit* debugTextEdit = new QPlainTextEdit();
     debugTextEdit->setReadOnly(true);
@@ -60,7 +60,7 @@ Userinterface::Userinterface(TcpClient * client) : Client(client) {
     QObject::connect(client, &TcpClient::newMessageReceived, [this, logHandler, receivedTextEdit](QString message)
                      {
                          qDebug() << "New message received: " << message;
-                         receivedTextEdit->appendPlainText(JSONtoMessage(message));
+                         receivedTextEdit->setMarkdown(receivedTextEdit->toMarkdown() + "\n" + JSONtoMessage(message));
                          // Log the received message
                          logHandler->appendJSON(message.toStdString().c_str());
                      });
@@ -77,8 +77,8 @@ Userinterface::Userinterface(TcpClient * client) : Client(client) {
         }
 
         //intercept for json
-        message = createJSON(Client->getNickName(), Client->getIP(), Client->getPort(), message );
-        receivedTextEdit->appendPlainText(JSONtoMessage(message));
+        message = createJSON(Client->getNickName(), Client->getIP(), Client->getPort(), message);
+        receivedTextEdit->setMarkdown(receivedTextEdit->toMarkdown() + "\n" + JSONtoMessage(message));
         qDebug() << "Message sent: " << message;
         debugTextEdit->appendPlainText("Message sent: " + message);
 
