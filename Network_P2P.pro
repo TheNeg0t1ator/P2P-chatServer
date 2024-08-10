@@ -14,7 +14,8 @@ SOURCES += \
         jsonparser.cpp \
         main.cpp \
         tcpclient.cpp \
-        userinterface.cpp
+        userinterface.cpp \
+        mainWindow.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
