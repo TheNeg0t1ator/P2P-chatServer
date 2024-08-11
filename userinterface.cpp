@@ -13,9 +13,9 @@
 
 Userinterface::Userinterface(TcpClient * client) : Client(client) {
     // Instantiate your fileHandler
-    logFileHandler * logHandler = new logFileHandler(TXT);
+    logFileHandler * logHandler = new logFileHandler(JSON);
     logHandler->getFileHandler()->init();  // Initialize log filetest
-    logHandler->getFileHandler()->setFileName("C:/Users/kobed/Desktop/p2p/test.txt");
+    logHandler->getFileHandler()->setFileName("C:/temp/test.json");
 
     // Create main window
     window.setWindowTitle("P2P Chat");
@@ -89,9 +89,6 @@ Userinterface::Userinterface(TcpClient * client) : Client(client) {
         // Log the sent message
         //logHandler.appendJSON(MessageToLog);
         QString AppendCSV = JSONtoQString(MessageToLog);
-
-        messageStr = AppendCSV.toStdString();
-        const char * log = messageStr.c_str();
 
         std::cout << __func__ << " filename: " << logHandler->getFileHandler()->getFileName() << std::endl;
         if(!logHandler->appendJSON(message.toStdString().c_str())){
