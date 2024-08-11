@@ -14,7 +14,8 @@ SOURCES += \
         jsonparser.cpp \
         main.cpp \
         tcpclient.cpp \
-        userinterface.cpp
+        userinterface.cpp \
+        mainWindow.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -26,4 +27,5 @@ HEADERS += \
     jsonparser.h \
     tcpclient.h \
     userinterface.h \
-    chatlog.hpp
+    chatlog.hpp \
+    mainWindow.hpp
