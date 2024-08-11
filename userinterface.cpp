@@ -110,41 +110,21 @@ void Userinterface::createMenus() {
     fileMenu = menuBar()->addMenu("&File");
 
     // Create actions
-    saveAction = new QAction("&Save", this);
     loadAction = new QAction("&Load", this);
     exitAction = new QAction("&Exit", this);
 
     // Add actions to the file menu
-    fileMenu->addAction(saveAction);
     fileMenu->addAction(loadAction);
     fileMenu->addSeparator();
     fileMenu->addAction(exitAction);
 
     // Connect actions to slots
-    connect(saveAction, &QAction::triggered, this, &Userinterface::saveFile);
     connect(loadAction, &QAction::triggered, this, &Userinterface::loadFile);
     connect(exitAction, &QAction::triggered, this, &Userinterface::exitApp);
 }
 
-void Userinterface::saveFile() {
-    QString fileName = QFileDialog::getSaveFileName(this, "Save File");
-    if (fileName.isEmpty()) {
-        return;
-    }
-
-    QFile file(fileName);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QMessageBox::warning(this, "Error", "Cannot save file: " + file.errorString());
-        return;
-    }
-
-    QTextStream out(&file);
-    out << "Your data here";  // Replace with actual data you want to save
-    file.close();
-}
-
 void Userinterface::loadFile() {
-    QString fileName = QFileDialog::getOpenFileName(this, "Open File");
+    QString fileName = QFileDialog::getOpenFileName(this, "Open File", "", "JSON Files (*.json);;CSV Files (*.csv)");
     if (fileName.isEmpty()) {
         return;
     }
@@ -156,9 +136,10 @@ void Userinterface::loadFile() {
     }
 
     QTextStream in(&file);
-    QString fileContent = in.readAll();  // Adjust this depending on what you want to load
+    QString fileContent = in.readAll();
     file.close();
-    // Use the content of the file, for example, setting it in a text edit:
+
+    // You can do something with the content here, e.g., display it
     // receivedTextEdit->setText(fileContent);
 }
 

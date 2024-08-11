@@ -14,7 +14,6 @@ public:
     ~Userinterface(){};
 
 private slots:
-    void saveFile();
     void loadFile();
     void exitApp();
 
@@ -23,9 +22,8 @@ private:
 
     TcpClient *Client;
 
-    // New Menu Elements
+    // Menu Elements
     QMenu *fileMenu;
-    QAction *saveAction;
     QAction *loadAction;
     QAction *exitAction;
 
@@ -33,4 +31,5 @@ private:
 };
 
 #endif // USERINTERFACE_H
+
 
