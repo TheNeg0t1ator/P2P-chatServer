@@ -48,7 +48,8 @@ Userinterface::Userinterface(TcpClient * client) : Client(client) {
 
     window.setLayout(layout);
 
-
+    // Load existing messages from the log file and display them
+    logHandler->loadMessages(receivedTextEdit);
 
     QObject::connect(client, &TcpClient::newConnection, [client, debugTextEdit](QTcpSocket *socket)
                      {

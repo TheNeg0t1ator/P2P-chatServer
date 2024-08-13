@@ -5,6 +5,8 @@
 #include <fstream>
 #include <vector>
 #include <QJsonArray>
+#include <QTextEdit>
+
 
 enum FileType {
     CSV = 1,
@@ -275,6 +277,13 @@ public:
         return file->readFromFile();
     }
     fileHandler* getFileHandler() { return file; }
+    void loadMessages(QTextEdit* receivedTextEdit) {
+        // Read messages from the log file
+        std::vector<QString> messages = readFromFile();
+        for (const QString& message : messages) {
+            receivedTextEdit->append(JSONtoMessage(message));
+        }
+    }
 
 private:
     enum FileType fileType;
