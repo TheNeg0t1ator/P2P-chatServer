@@ -213,9 +213,9 @@ bool JsonFileHandler::appendJSON(const QString& JSONmessage) {
         return false;
     }
 
-    // Step 3: Convert the JSON array to a string
+    // Step 3: Convert the JSON array to a human-readable string with indentation
     QJsonDocument updatedDoc(jsonArray);
-    QByteArray jsonBytes = updatedDoc.toJson(QJsonDocument::Compact);
+    QByteArray jsonBytes = updatedDoc.toJson(QJsonDocument::Indented);  // Use Indented format
     std::string jsonString = jsonBytes.toStdString();
 
     // Step 4: Write the updated JSON array back to the file
