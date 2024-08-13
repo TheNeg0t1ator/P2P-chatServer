@@ -48,7 +48,7 @@ Userinterface::Userinterface(TcpClient *client) : QMainWindow(), Client(client) 
     setCentralWidget(centralWidget);
 
 
-    window.setLayout(layout);
+    window()->setLayout(layout);
 
     // Load existing messages from the log file and display them
     logHandler->loadMessages(receivedTextEdit);
