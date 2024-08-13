@@ -182,39 +182,62 @@ std::vector<QString> JsonFileHandler::readFromFile() {
 }
 
 bool JsonFileHandler::appendJSON(const QString& JSONmessage) {
+    std::cout << "Appending JSON: " << JSONmessage.toStdString() << std::endl;
 
-    // Read existing JSON content from the file
-    std::vector<QString> messages = readFromFile();
-    // Add the new JSON message to the vector
-    messages.push_back(JSONmessage);
-
-    // Create a JSON array with the combined messages
+    // Step 1: Read the existing JSON content from the file
     QJsonArray jsonArray;
-    for (const QString& msg : messages) {
-        QJsonDocument doc = QJsonDocument::fromJson(msg.toUtf8());
-        if (!doc.isNull()) {
-            jsonArray.append(doc.object());
-        } else {
-            std::cout << "Error: Failed to parse message: " << msg.toStdString() << std::endl;
+
+    std::ifstream fileIn(fileName, std::ios::in | std::ios::binary);
+    if (fileIn.is_open()) {
+        std::string content((std::istreambuf_iterator<char>(fileIn)),
+                             std::istreambuf_iterator<char>());
+        fileIn.close();
+
+        if (!content.empty()) {
+            QJsonDocument doc = QJsonDocument::fromJson(QString::fromStdString(content).toUtf8());
+            if (doc.isArray()) {
+                jsonArray = doc.array(); // Load the existing JSON array
+            } else {
+                std::cerr << "Error: The existing file content is not a valid JSON array." << std::endl;
+                return false;
+            }
         }
     }
 
-    // Convert the JSON array to a JSON document
-    QJsonDocument newDoc(jsonArray);
-    QByteArray jsonBytes = newDoc.toJson(QJsonDocument::Compact);
+    // Step 2: Add the new JSON message to the array
+    QJsonDocument newDoc = QJsonDocument::fromJson(JSONmessage.toUtf8());
+    if (!newDoc.isNull() && newDoc.isObject()) {
+        jsonArray.append(newDoc.object());
+    } else {
+        std::cerr << "Error: The new JSON message is not a valid JSON object." << std::endl;
+        return false;
+    }
+
+    // Step 3: Convert the JSON array to a string
+    QJsonDocument updatedDoc(jsonArray);
+    QByteArray jsonBytes = updatedDoc.toJson(QJsonDocument::Compact);
     std::string jsonString = jsonBytes.toStdString();
 
-    // Open the file in write mode to overwrite it
-    file.open(fileName, std::ios::out | std::ios::trunc | std::ios::binary);
-    if (file.is_open()) {
-        file.write(jsonString.c_str(), jsonString.size());
-        file.close();
-        return true;
+    // Step 4: Write the updated JSON array back to the file
+    std::ofstream fileOut(fileName, std::ios::out | std::ios::trunc | std::ios::binary);
+    if (fileOut.is_open()) {
+        fileOut.write(jsonString.c_str(), jsonString.size());
+        if (fileOut.fail()) {
+            std::cerr << "Error: Failed to write JSON to file." << std::endl;
+            fileOut.close();
+            return false;
+        }
+        fileOut.close();
     } else {
         std::cerr << "Error: Unable to open file for writing." << std::endl;
         return false;
     }
+
+    std::cout << "Successfully wrote JSON to file." << std::endl;
+    return true;
 }
+
+
 
 
 class logFileHandler {
