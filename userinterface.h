@@ -1,17 +1,35 @@
 #ifndef USERINTERFACE_H
 #define USERINTERFACE_H
-#include <QWidget>
+
+#include <QMainWindow>
 
 class TcpClient;
 
-class Userinterface
+class Userinterface : public QMainWindow
 {
+    Q_OBJECT
+
 public:
-    Userinterface(TcpClient * client);
+    Userinterface(TcpClient *client);
     ~Userinterface(){};
+
+private slots:
+    void loadFile();
+    void exitApp();
+
 private:
-    TcpClient * Client;
-    QWidget window;
+    void createMenus();
+
+    TcpClient *Client;
+
+    // Menu Elements
+    QMenu *fileMenu;
+    QAction *loadAction;
+    QAction *exitAction;
+
+    // Other UI elements go here, like text edit, etc.
 };
 
 #endif // USERINTERFACE_H
+
+
