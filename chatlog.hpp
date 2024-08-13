@@ -281,7 +281,7 @@ public:
         // Read messages from the log file
         std::vector<QString> messages = readFromFile();
         for (const QString& message : messages) {
-            receivedTextEdit->append(JSONtoMessage(message));
+            receivedTextEdit->setMarkdown(receivedTextEdit->toMarkdown() + "\n" + JSONtoMessage(message));
         }
     }
 
