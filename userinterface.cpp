@@ -10,9 +10,11 @@
 
 Userinterface::Userinterface(TcpClient *client) : QMainWindow(), Client(client) {
     // Instantiate your fileHandler
-    logFileHandler *logHandler = new logFileHandler(TXT);
+
+    logFileHandler * logHandler = new logFileHandler(JSON);
+
     logHandler->getFileHandler()->init();  // Initialize log filetest
-    logHandler->getFileHandler()->setFileName("C:/Users/kobed/Desktop/p2p/test.txt");
+    logHandler->getFileHandler()->setFileName("C:/temp/test.json");
 
     // Create main window
     setWindowTitle("P2P Chat");
@@ -45,8 +47,15 @@ Userinterface::Userinterface(TcpClient *client) : QMainWindow(), Client(client) 
     layout->addWidget(debugTextEdit);
     setCentralWidget(centralWidget);
 
+
+    window.setLayout(layout);
+
+    // Load existing messages from the log file and display them
+    logHandler->loadMessages(receivedTextEdit);
+
     // Create menu bar
     createMenus();
+
 
     QObject::connect(client, &TcpClient::newConnection, [client, debugTextEdit](QTcpSocket *socket)
                      {
@@ -86,6 +95,7 @@ Userinterface::Userinterface(TcpClient *client) : QMainWindow(), Client(client) 
 
         // Log the sent message
         QString AppendCSV = JSONtoQString(MessageToLog);
+
 
         messageStr = AppendCSV.toStdString();
         const char *log = messageStr.c_str();
