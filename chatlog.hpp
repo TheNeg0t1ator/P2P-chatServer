@@ -76,38 +76,39 @@ void fileHandler::clearFile() {
 }
 
 
-bool fileHandler::openFile(){
-    if (!fileopen)
-    {
-        file.open(fileName, std::ios::in | std::ios::out | std::ios::app);
-        if (!file.good()) {
+bool fileHandler::openFile() {
+    if (!fileopen) {
+        // Open the file in binary mode for writing
+        file.open(fileName, std::ios::in | std::ios::out | std::ios::app | std::ios::binary);
+        if (!file.is_open()) {
+            // If the file doesn't exist, create it
             file.clear();
-            file.open(fileName, std::ios::out);
+            file.open(fileName, std::ios::out | std::ios::binary);
+            file.close();
+            file.open(fileName, std::ios::in | std::ios::out | std::ios::app | std::ios::binary);
         }
-        fileopen = true;
+        fileopen = file.is_open();
     }
     return fileopen;
 }
 
 bool fileHandler::appendToFile(const char *text) {
     if (openFile()) {
-        std::cout << __func__ << ": Adding to file: " << text << std::endl;
         
-        file.seekp(0, std::ios::end);  // Move to the end of file
-        file << text;
-        
+        file.seekp(0, std::ios::end);
+        file.write(text, std::strlen(text));
         if (file.fail()) {
             std::cerr << "Error: Failed to write to file. Stream state: " 
                       << (file.rdstate() & std::ios::failbit ? "failbit set " : "")
                       << (file.rdstate() & std::ios::badbit ? "badbit set " : "")
                       << (file.rdstate() & std::ios::eofbit ? "eofbit set " : "")
-                      << (file.rdstate() & std::ios::goodbit ? "goodbit set " : "")
                       << std::endl;
             file.clear();  // Clear error flags
+            closeFile();   // Ensure file is closed
             return false;
         }
         
-        file.flush();  // Ensure data is flushed to disk
+        file.flush();
         closeFile();
         return true;
     } else {
@@ -115,6 +116,7 @@ bool fileHandler::appendToFile(const char *text) {
         return false;
     }
 }
+
 
 class CsvFileHandler : public fileHandler {
 public:
@@ -180,11 +182,13 @@ std::vector<QString> JsonFileHandler::readFromFile() {
 }
 
 bool JsonFileHandler::appendJSON(const QString& JSONmessage) {
-    std::cout << "Appending JSON: " << JSONmessage.toStdString() << std::endl;
 
+    // Read existing JSON content from the file
     std::vector<QString> messages = readFromFile();
+    // Add the new JSON message to the vector
     messages.push_back(JSONmessage);
 
+    // Create a JSON array with the combined messages
     QJsonArray jsonArray;
     for (const QString& msg : messages) {
         QJsonDocument doc = QJsonDocument::fromJson(msg.toUtf8());
@@ -195,26 +199,19 @@ bool JsonFileHandler::appendJSON(const QString& JSONmessage) {
         }
     }
 
+    // Convert the JSON array to a JSON document
     QJsonDocument newDoc(jsonArray);
     QByteArray jsonBytes = newDoc.toJson(QJsonDocument::Compact);
     std::string jsonString = jsonBytes.toStdString();
 
-    std::cout << "Final JSON to write: " << jsonString << std::endl;
-
-    if (openFile()) {
-        std::cout << "File opened successfully before writing." << std::endl;
-    } else {
-        std::cout << "Error: Failed to open file before writing." << std::endl;
-        return false;
-    }
-
-    if (appendToFile(jsonString.c_str())) {
-        std::cout << "Successfully wrote JSON to file." << std::endl;
-        // Read back and display content
-        readBackFile();
+    // Open the file in write mode to overwrite it
+    file.open(fileName, std::ios::out | std::ios::trunc | std::ios::binary);
+    if (file.is_open()) {
+        file.write(jsonString.c_str(), jsonString.size());
+        file.close();
         return true;
     } else {
-        std::cout << "Error: Failed to write JSON to file." << std::endl;
+        std::cerr << "Error: Unable to open file for writing." << std::endl;
         return false;
     }
 }
