@@ -14,7 +14,7 @@ Userinterface::Userinterface(TcpClient *client) : QMainWindow(), Client(client) 
     logFileHandler * logHandler = new logFileHandler(JSON);
 
     logHandler->getFileHandler()->init();  // Initialize log filetest
-    logHandler->getFileHandler()->setFileName("C:/temp/test.json");
+    logHandler->getFileHandler()->setFileName("./chat.log");
 
     // Create main window
     setWindowTitle("P2P Chat");
