@@ -68,13 +68,13 @@ this generates all the dll files necessary.
 - [x] correct files on git 
 - [x] working build manual as readme on GitHub (project must be possible to build from scratch on a clean PC) 
 
-### OOP 10/15
+### OOP 11/15
 
 - [x] at least 2 default constructors — `chatlog.hpp` line 125,247
 - [x] at least 2 parameterized constructors —  `chatlog.hpp` line 247, `jsonparser.h` line 8
 - [ ] at least 2 copy constructors
 - [x] at least 2 destructors — `chatlog.hpp` line 264
-- [ ] member initialization in constructors (the stuff behind a colon)
+- [x] member initialization in constructors (the stuff behind a colon) — `chatlog.hpp` line 20 , `userinterface.cpp` line 11
 - [ ] constructor forwarding
 - [x] useful proven (dynamic) polymorphism — `chatlog.hpp`, line 245
 - [x] useful usage of "this" (if the code does not work without it) — `userinterface.cpp`, line 67, 76
@@ -96,7 +96,7 @@ this generates all the dll files necessary.
 - [x] dynamic memory allocation (new) — `userinterface.cpp`, line 14
 - [x] dynamic memory removing (delete) — `chatlog.hpp`, line 265
 - [x] 2 useful (modern) call-by-references — `chatlog.hpp`, line 32 `jsonparser.cpp`, line 5
-- [x] useful string class usage — `mainWindow.hpp`, line 29
+- [x] useful string class usage — `tcpclient.cpp`, line 116
 - [ ] useful container class
 - [x] useful usage of nullptr — `chatlog.hpp`, line 260
 - [x] useful usage of (modern) file-I/O — `chatlog.hpp`
