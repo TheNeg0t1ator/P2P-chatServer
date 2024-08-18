@@ -101,16 +101,16 @@ this generates all the dll files necessary.
 - [x] useful usage of nullptr — `chatlog.hpp`, line 260
 - [x] useful usage of (modern) file-I/O — `chatlog.hpp`
 - [ ] useful exception handling
-- [ ] useful usage of lambda function
+- [x] useful usage of lambda function — `userinterface.cpp`, line 60,67,76
 - [ ] useful usage of threads
 
 ### Extensions 6/10
 
-- [x] useful Qt class — `mainWindow.hpp`, line 16
+- [x] useful Qt class — `mainWindow.hpp`, line 29
 - [x] useful usage of signals/slots — `tcpclient.h`, line 30
 - [ ] test-driven development (= written test plan or unit tests)
 - [ ] solve bug ticket (with pull request or commit message issue link and issue branch) 
-- [x] report a bug ticket on another project — `Seppe Chess`
+- [x] report a bug ticket on another project — [`Seppe Chess`](https://github.com/SeppeBudenaers/Cpp_Chess/issues/2)
 - [x] usage of a GUI — `userinterface.cpp`, line 118
 - [ ] usage of OpenGL or other 3D engine
 - [ ] useful usage of an external library (not Qt)
